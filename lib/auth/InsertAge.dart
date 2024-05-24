@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importa el paquete de Firebase Authentication
+import 'package:cloud_firestore/cloud_firestore.dart'; // Importa el paquete de Cloud Firestore
 
 class BirthDatePage extends StatefulWidget {
   @override
@@ -27,37 +29,49 @@ class _BirthDatePageState extends State<BirthDatePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            SizedBox(height: 50),
+            SizedBox(height: 50), // Add space above the "Welcome to the App!" text
             const Text("Welcome to the App!",
                 style: TextStyle(fontSize: 40, fontWeight: FontWeight.w500)),
             const SizedBox(height: 50),
-            SizedBox(height: 10),
-            TextField(
-              controller: _yearController,
-              decoration: InputDecoration(
-                labelText: 'Enter your birth year',
-              ),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _dayController,
-              decoration: InputDecoration(
-                labelText: 'Enter your birth day',
-              ),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 40), 
             ElevatedButton(
-              child: Text('Submit'),
-              onPressed: () {
-                print('Birth Year: ${_yearController.text}');
-                print('Birth Day: ${_dayController.text}');
+              child: Text('Select Birth Date'),
+              onPressed: () async {
+                final DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime.now(),
+                );
+                if (pickedDate != null) {
+                  // Save birth date to Firebase
+                  saveBirthDateToFirebase(pickedDate);
+                }
               },
             ),
           ],
         ),
       ),
     );
+  }
+
+  void saveBirthDateToFirebase(DateTime birthDate) async {
+    try {
+      // Access the current user from Firebase Authentication
+      User? user = FirebaseAuth.instance.currentUser;
+
+      // Reference to the users collection in Firestore
+      CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+      // Update the birth date for the current user
+      await users.doc(user!.uid).update({
+        'birthDate': birthDate,
+      });
+
+      // Navigate to the next screen or perform any other actions upon successful save
+      print('Birth Date saved successfully: $birthDate');
+    } catch (e) {
+      print('Error saving birth date: $e');
+      // Handle any errors that occur during the save process
+    }
   }
 }
