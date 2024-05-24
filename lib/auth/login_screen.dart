@@ -6,6 +6,7 @@ import 'package:auth_firebase/home_screen.dart';
 import 'package:auth_firebase/widgets/button.dart';
 import 'package:auth_firebase/widgets/textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:auth_firebase/auth/InsertAge.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -82,12 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
   _login() async {
-    final user =
-        await _auth.loginUserWithEmailAndPassword(_email.text, _password.text);
-
+    final user = await _auth.loginUserWithEmailAndPassword(_email.text, _password.text);
+  
     if (user != null) {
       log("User Logged In");
-      goToHome(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => BirthDatePage()), // Navigate to InsertAge screen
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
