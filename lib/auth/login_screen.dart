@@ -6,7 +6,7 @@ import 'package:auth_firebase/home_screen.dart';
 import 'package:auth_firebase/widgets/button.dart';
 import 'package:auth_firebase/widgets/textfield.dart';
 import 'package:flutter/material.dart';
-import 'package:auth_firebase/auth/InsertAge.dart';
+import 'package:auth_firebase/InsertAge.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

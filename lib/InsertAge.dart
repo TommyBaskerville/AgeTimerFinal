@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Importa el paquete de Firebase Authentication
 import 'package:cloud_firestore/cloud_firestore.dart'; // Importa el paquete de Cloud Firestore
+import 'package:auth_firebase/AgeTimer.dart'; // Importa el paquete de AgeTimer
 
 class BirthDatePage extends StatefulWidget {
   @override
@@ -48,30 +49,55 @@ class _BirthDatePageState extends State<BirthDatePage> {
                 }
               },
             ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+            child: Text('Continue to Age Timer'),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AgeTimerApp()),
+              );
+            },
+          ),
           ],
         ),
       ),
     );
   }
 
-  void saveBirthDateToFirebase(DateTime birthDate) async {
-    try {
-      // Access the current user from Firebase Authentication
-      User? user = FirebaseAuth.instance.currentUser;
+void saveBirthDateToFirebase(DateTime birthDate) async {
+  try {
+    // Access the current user from Firebase Authentication
+    User? user = FirebaseAuth.instance.currentUser;
 
+    if (user != null) {
       // Reference to the users collection in Firestore
       CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-      // Update the birth date for the current user
-      await users.doc(user!.uid).update({
-        'birthDate': birthDate,
-      });
-
-      // Navigate to the next screen or perform any other actions upon successful save
-      print('Birth Date saved successfully: $birthDate');
-    } catch (e) {
-      print('Error saving birth date: $e');
-      // Handle any errors that occur during the save process
+      // Check if the user document exists
+      var userDoc = await users.doc(user.uid).get();
+      if (userDoc.exists) {
+        // Document exists, update the birth date
+        await users.doc(user.uid).update({
+          'birthDate': birthDate,
+        });
+        print('Birth Date updated successfully: $birthDate');
+      } else {
+        // Document does not exist, create it with the birth date
+        await users.doc(user.uid).set({
+          'birthDate': birthDate,
+          // You can add other fields to initialize here if needed
+        });
+        print('User document created with Birth Date: $birthDate');
+      }
+    } else {
+      print('User is not authenticated');
+      // Handle case where user is not authenticated, if needed
     }
+  } catch (e) {
+    print('Error saving birth date: $e');
+    // Handle any errors that occur during the save process
   }
+}
+
 }
