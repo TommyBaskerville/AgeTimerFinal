@@ -1,9 +1,8 @@
-
-import 'package:flutter/material.dart'; // Import the 'material.dart' package
-import 'package:firebase_auth/firebase_auth.dart'; // Importa el paquete de Firebase Authentication
-import 'package:cloud_firestore/cloud_firestore.dart'; // Importa el paquete de Cloud Firestore
+import 'package:auth_firebase/InsertAge.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
-
 
 void main() {
   runApp(const AgeTimerApp());
@@ -78,7 +77,17 @@ class _AgeTimerPageState extends State<AgeTimerPage> {
     Duration age = _currentTime.difference(_birthDate);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Age Timer'),
+        title: const Text('Age Timer'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => (BirthDatePage ()),
+                )
+              );
+          },
+        ),
       ),
       body: Center(
         child: Text(
@@ -89,4 +98,3 @@ class _AgeTimerPageState extends State<AgeTimerPage> {
     );
   }
 }
-

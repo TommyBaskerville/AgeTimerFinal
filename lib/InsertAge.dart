@@ -59,6 +59,16 @@ class _BirthDatePageState extends State<BirthDatePage> {
               );
             },
           ),
+          const SizedBox(height: 30),
+            ElevatedButton(
+              child: Text('Delete Account and Sign Out'),
+              onPressed: () {
+                deleteUserFromFirebase();
+                signOutUser();
+
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+            ),
           ],
         ),
       ),
@@ -97,6 +107,38 @@ void saveBirthDateToFirebase(DateTime birthDate) async {
   } catch (e) {
     print('Error saving birth date: $e');
     // Handle any errors that occur during the save process
+  }
+}
+
+void deleteUserFromFirebase() async {
+  try {
+    // Access the current user from Firebase Authentication
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // Reference to the users collection in Firestore
+      CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+      // Delete the user document
+      await users.doc(user.uid).delete();
+      print('User document deleted successfully');
+    } else {
+      print('User is not authenticated');
+      // Handle case where user is not authenticated, if needed
+    }
+  } catch (e) {
+    print('Error deleting user document: $e');
+    // Handle any errors that occur during the delete process
+  }
+}
+
+void signOutUser() async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    print('User signed out successfully');
+  } catch (e) {
+    print('Error signing out user: $e');
+    // Handle any errors that occur during the sign out process
   }
 }
 
